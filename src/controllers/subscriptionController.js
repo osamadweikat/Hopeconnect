@@ -2,12 +2,13 @@ const Subscription = require("../models/Subscription");
 const SubscriptionPlan = require("../models/SubscriptionPlan");
 const User = require("../models/User");
 const { Op } = require("sequelize");
-const emailService = require("../utils/emailService");
+const { sendEmail, sendSubscriptionCancellation } = require("../utils/emailService");
 
 exports.subscribe = async (req, res) => {
     try {
         const { plan_id } = req.body;
         const user_id = req.user.id;
+
         const user = await User.findByPk(user_id);
         if (!user) return res.status(404).json({ error: "User not found" });
 
@@ -17,9 +18,6 @@ exports.subscribe = async (req, res) => {
         const existingSubscription = await Subscription.findOne({
             where: { user_id, status: "active" }
         });
-        if (existingSubscription) {
-            return res.status(400).json({ error: "You already have an active subscription." });
-        }
 
         let next_billing_date = new Date();
         if (plan.renewal_period === "monthly") next_billing_date.setMonth(next_billing_date.getMonth() + 1);
@@ -33,7 +31,11 @@ exports.subscribe = async (req, res) => {
             status: "active"
         });
 
-        await emailService.sendSubscriptionConfirmation(user.email, plan.name, next_billing_date);
+        await sendEmail(
+            user.email,
+            "Subscription Confirmed - HopeConnect",
+            `Thank you for subscribing to the "${plan.name}" plan. Your next billing date is ${next_billing_date.toDateString()}.`
+        );
 
         res.status(201).json({ message: "Subscription successful", subscription });
     } catch (error) {
@@ -45,21 +47,27 @@ exports.subscribe = async (req, res) => {
 exports.cancelSubscription = async (req, res) => {
     try {
         const user_id = req.user.id;
+        const { plan_id } = req.body;
+
+        if (!plan_id) {
+            return res.status(400).json({ error: "plan_id is required." });
+        }
+
         const user = await User.findByPk(user_id);
 
         const subscription = await Subscription.findOne({
-            where: { user_id, status: "active" },
-            include: [{ model: SubscriptionPlan }]
+            where: { user_id, plan_id, status: "active" },
+            include: [{ model: SubscriptionPlan, as: "SubscriptionPlan" }]
         });
 
         if (!subscription) {
-            return res.status(404).json({ error: "No active subscription found." });
+            return res.status(404).json({ error: "No active subscription found for this plan." });
         }
 
         subscription.status = "canceled";
         await subscription.save();
 
-        await emailService.sendSubscriptionCancellation(user.email, subscription.SubscriptionPlan.name);
+        await sendSubscriptionCancellation(user.email, subscription.SubscriptionPlan.name);
 
         res.status(200).json({ message: "Subscription canceled successfully." });
     } catch (error) {
@@ -83,7 +91,7 @@ exports.getUserSubscriptions = async (req, res) => {
         const user_id = req.user.id;
         const subscriptions = await Subscription.findAll({
             where: { user_id, status: "active" },
-            include: [{ model: SubscriptionPlan }]
+            include: [{ model: SubscriptionPlan, as: "SubscriptionPlan" }]
         });
 
         res.status(200).json(subscriptions);
@@ -98,18 +106,21 @@ exports.sendRenewalReminders = async () => {
         const upcomingRenewals = await Subscription.findAll({
             where: {
                 next_billing_date: {
-                    [Op.lte]: new Date(new Date().setDate(new Date().getDate() + 3)) 
+                    [Op.lte]: new Date(new Date().setDate(new Date().getDate() + 3))
                 },
                 status: "active"
             },
-            include: [{ model: User }, { model: SubscriptionPlan }]
+            include: [
+                { model: User },
+                { model: SubscriptionPlan, as: "SubscriptionPlan" }
+            ]
         });
 
         for (const subscription of upcomingRenewals) {
-            await emailService.sendSubscriptionRenewalReminder(
+            await sendEmail(
                 subscription.User.email,
-                subscription.SubscriptionPlan.name,
-                subscription.next_billing_date
+                "Upcoming Subscription Renewal - HopeConnect",
+                `Your subscription to "${subscription.SubscriptionPlan.name}" will renew on ${subscription.next_billing_date.toDateString()}. If you wish to cancel, please do so before the renewal date.`
             );
         }
 

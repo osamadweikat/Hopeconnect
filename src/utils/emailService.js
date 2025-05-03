@@ -2,10 +2,11 @@ require('dotenv').config();
 const SibApiV3Sdk = require('sib-api-v3-sdk');
 const fs = require('fs');
 const generateReceipt = require('../utils/pdfGenerator');
+
 const sendEmail = async (to, subject, message, attachmentPath = null) => {
     try {
         if (!process.env.BREVO_API_KEY || !process.env.BREVO_SENDER) {
-            throw new Error("Missing Brevo API credentials in environment variables.");
+            throw new Error("Missing Brevo API credentials.");
         }
 
         const client = SibApiV3Sdk.ApiClient.instance;
@@ -16,7 +17,7 @@ const sendEmail = async (to, subject, message, attachmentPath = null) => {
         const sendSmtpEmail = {
             to: [{ email: to }],
             sender: { email: process.env.BREVO_SENDER, name: "HopeConnect" },
-            subject: subject,
+            subject,
             htmlContent: `<p>${message}</p>`,
         };
 
@@ -42,44 +43,38 @@ const sendDonationConfirmation = async (donation, donorEmail) => {
     const receiptPath = await generateReceipt(donation);
     const subject = "Donation Confirmation - HopeConnect";
     const message = `Thank you for your generous donation of $${donation.amount} towards ${donation.category}. Your receipt is attached.`;
-
     return sendEmail(donorEmail, subject, message, receiptPath);
 };
 
-exports.sendSubscriptionConfirmation = async (email, planName, renewalDate) => {
-    await transporter.sendMail({
-        from: process.env.BREVO_SENDER,
-        to: email,
-        subject: "Subscription Confirmed - HopeConnect",
-        text: `Thank you for subscribing to the "${planName}" plan. Your next billing date is ${renewalDate}.`
-    });
+const sendSubscriptionConfirmation = async (email, planName, renewalDate) => {
+    const subject = "Subscription Confirmed - HopeConnect";
+    const message = `Thank you for subscribing to the "${planName}" plan. Your next billing date is ${renewalDate.toDateString()}.`;
+    return sendEmail(email, subject, message);
 };
 
-exports.sendSubscriptionCancellation = async (email, planName) => {
-    await transporter.sendMail({
-        from: process.env.BREVO_SENDER,
-        to: email,
-        subject: "Subscription Canceled - HopeConnect",
-        text: `Your subscription to the "${planName}" plan has been successfully canceled.`
-    });
+const sendSubscriptionCancellation = async (email, planName) => {
+    const subject = "Subscription Canceled - HopeConnect";
+    const message = `Your subscription to the "${planName}" plan has been successfully canceled.`;
+    return sendEmail(email, subject, message);
 };
 
-exports.sendSubscriptionRenewalReminder = async (email, planName, renewalDate) => {
-    await transporter.sendMail({
-        from: process.env.BREVO_SENDER,
-        to: email,
-        subject: "Upcoming Subscription Renewal - HopeConnect",
-        text: `Your subscription to "${planName}" will renew on ${renewalDate}. If you wish to cancel, please do so before the renewal date.`
-    });
+const sendSubscriptionRenewalReminder = async (email, planName, renewalDate) => {
+    const subject = "Upcoming Subscription Renewal - HopeConnect";
+    const message = `Your subscription to "${planName}" will renew on ${renewalDate.toDateString()}. If you wish to cancel, please do so before the renewal date.`;
+    return sendEmail(email, subject, message);
 };
 
-exports.sendSubscriptionPaymentFailure = async (email, planName) => {
-    await transporter.sendMail({
-        from: process.env.BREVO_SENDER,
-        to: email,
-        subject: "Payment Failed - HopeConnect",
-        text: `We were unable to process your payment for the "${planName}" plan. Please update your payment details to avoid cancellation.`
-    });
+const sendSubscriptionPaymentFailure = async (email, planName) => {
+    const subject = "Payment Failed - HopeConnect";
+    const message = `We were unable to process your payment for the "${planName}" plan. Please update your payment details to avoid cancellation.`;
+    return sendEmail(email, subject, message);
 };
 
-module.exports = { sendEmail, sendDonationConfirmation };
+module.exports = {
+    sendEmail,
+    sendDonationConfirmation,
+    sendSubscriptionConfirmation,
+    sendSubscriptionCancellation,
+    sendSubscriptionRenewalReminder,
+    sendSubscriptionPaymentFailure
+};

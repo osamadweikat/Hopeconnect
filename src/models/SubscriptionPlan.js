@@ -8,7 +8,7 @@ const SubscriptionPlan = sequelize.define("SubscriptionPlan", {
     },
     amount: {
         type: DataTypes.DECIMAL(10, 2),
-        allowNull: false
+        //allowNull: false
     },
     renewal_period: {
         type: DataTypes.ENUM("monthly", "quarterly", "yearly"),
@@ -18,6 +18,8 @@ const SubscriptionPlan = sequelize.define("SubscriptionPlan", {
         type: DataTypes.TEXT,
         allowNull: true
     }
+}, {
+    timestamps: true
 });
 
 module.exports = SubscriptionPlan;

@@ -5,7 +5,8 @@ const Orphan = require("../models/Orphan");
 const Sponsorship = require("../models/Sponsorship");
 const Donation = require("../models/Donation");
 const Volunteer = require("../models/Volunteer");
-const Emergency = require("../models/Emergency"); 
+const Emergency = require("../models/Emergency");
+const SubscriptionPlan = require("../models/SubscriptionPlan");
 const bcrypt = require("bcrypt");
 
 async function seedDatabase() {
@@ -70,9 +71,8 @@ async function seedDatabase() {
             role: "donor",
             phone: "+111000222",
             address: "Ramallah"
-            
         });
-        
+
         const unapprovedUser2 = await User.create({
             full_name: "Yazan Kamal",
             email: "osamadweikat+yazan@proton.me",
@@ -81,7 +81,28 @@ async function seedDatabase() {
             phone: "+333444555",
             address: "Nablus"
         });
-        
+
+        console.log("Seeding Subscription Plans...");
+        await SubscriptionPlan.bulkCreate([
+            {
+                name: "Basic Monthly",
+                price: 10.0,
+                renewal_period: "monthly",
+                description: "Access to basic donation tracking and updates."
+            },
+            {
+                name: "Premium Quarterly",
+                price: 25.0,
+                renewal_period: "quarterly",
+                description: "Quarterly reports, updates, and email summaries."
+            },
+            {
+                name: "Ultimate Yearly",
+                price: 90.0,
+                renewal_period: "yearly",
+                description: "Full platform access with yearly impact reports."
+            }
+        ]);
 
         console.log("Seeding Orphanages...");
         const orphanage1 = await Orphanage.create({
@@ -131,24 +152,29 @@ async function seedDatabase() {
             orphanage_id: orphanage2.id
         });
 
-        console.log("Seeding Sponsorships...");
-        await Sponsorship.create({
-            sponsor_id: donor.id,
-            orphan_id: orphan1.id,
-            amount: 50.00,
-            currency: "USD",
-            start_date: new Date(),
-            end_date: new Date(new Date().setFullYear(new Date().getFullYear() + 1))
-        });
+        console.log("Seeding Subscription Plans...");
+        await SubscriptionPlan.bulkCreate([
+            {
+                name: "Basic Monthly",
+                amount: 10.00,
+                renewal_period: "monthly",
+                description: "Access to basic donation tracking and updates."
+            },
+            {
+                name: "Premium Quarterly",
+                amount: 25.00,
+                renewal_period: "quarterly",
+                description: "Quarterly reports, updates, and email summaries."
+            },
+            {
+                name: "Ultimate Yearly",
+                amount: 90.00,
+                renewal_period: "yearly",
+                description: "Full platform access with yearly impact reports."
+            }
+        ]);
+        
 
-        await Sponsorship.create({
-            sponsor_id: donor2.id,
-            orphan_id: orphan2.id,
-            amount: 60.00,
-            currency: "USD",
-            start_date: new Date(),
-            end_date: new Date(new Date().setMonth(new Date().getMonth() + 6))
-        });
 
         console.log("Seeding Donations...");
         await Donation.create({
@@ -183,10 +209,10 @@ async function seedDatabase() {
                 description: "High fever and needs immediate attention.",
                 status: "active",
                 orphan_id: orphan1.id,
-                created_by: admin.id, 
+                created_by: admin.id,
                 target_amount: 200.0
             });
-            
+
             await Emergency.create({
                 title: "Food Supplies Shortage",
                 description: "Shelter is low on essential food supplies.",
@@ -195,7 +221,6 @@ async function seedDatabase() {
                 created_by: orphanageManager.id,
                 target_amount: 500.0
             });
-            
         }
 
         console.log("Database seeding complete!");

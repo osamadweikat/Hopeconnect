@@ -30,4 +30,9 @@ const Subscription = sequelize.define("Subscription", {
     }
 });
 
+Subscription.belongsTo(SubscriptionPlan, {
+    foreignKey: "plan_id",
+    as: "SubscriptionPlan"
+});
+
 module.exports = Subscription;

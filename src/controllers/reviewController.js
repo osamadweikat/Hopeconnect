@@ -1,4 +1,5 @@
-const db = require('../config/db');
+const Review = require('../models/Review');
+const User = require('../models/User');
 
 exports.addReview = async (req, res) => {
     try {
@@ -9,11 +10,7 @@ exports.addReview = async (req, res) => {
             return res.status(400).json({ message: 'Missing required fields' });
         }
 
-        await db.execute(
-            'INSERT INTO Reviews (user_id, orphanage_id, rating, comment) VALUES (?, ?, ?, ?)',
-            [user_id, orphanage_id, rating, comment]
-        );
-
+        await Review.create({ user_id, orphanage_id, rating, comment });
         res.status(201).json({ message: 'Review submitted successfully' });
     } catch (error) {
         console.error(error);
@@ -24,8 +21,13 @@ exports.addReview = async (req, res) => {
 exports.getReviews = async (req, res) => {
     try {
         const orphanage_id = req.params.id;
-        const [reviews] = await db.execute('SELECT * FROM Reviews WHERE orphanage_id = ?', [orphanage_id]);
+        const user = await User.findByPk(req.user.id);
+        
+        if (!user || user.role !== 'admin') {
+            return res.status(403).json({ message: 'Forbidden: Only admin can view reviews' });
+        }
 
+        const reviews = await Review.findAll({ where: { orphanage_id } });
         res.json({ reviews });
     } catch (error) {
         console.error(error);

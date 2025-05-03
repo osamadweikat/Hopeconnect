@@ -8,6 +8,8 @@ process.removeAllListeners("warning");
 const { verifyToken, verifyAdmin } = require("./src/middleware/authMiddleware");
 const { sequelize } = require("./src/config/db");
 const cronJobs = require("./src/utils/cronJobs"); 
+const donationRoutes = require("./src/routes/donationRoutes");
+
 
 dotenv.config();
 
@@ -57,6 +59,8 @@ app.use("/api/donation-tracking", donationTrackingRoutes);
 app.use("/api/donation-summary", donationSummaryRoutes);
 app.use("/api/chatbot", chatbotRoutes);
 app.use("/api/admin/dashboard", adminDashboardRoutes);
+app.use("/api/donation", donationRoutes);
+
 
 app.use(errorHandler);
 

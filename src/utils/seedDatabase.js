@@ -1,4 +1,3 @@
-
 const { sequelize } = require("../config/db");
 const User = require("../models/User");
 const Orphanage = require("../models/Orphanage");
@@ -157,7 +156,7 @@ async function seedDatabase() {
             amount: 50.00,
             currency: "USD",
             category: "education",
-            status: "completed",
+            status: "pending",
             transaction_id: `txn_${Date.now()}`
         });
 

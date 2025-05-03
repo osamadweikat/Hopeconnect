@@ -2,13 +2,24 @@ const { Donation } = require("../models");
 
 exports.createDonation = async (req, res) => {
     try {
-        const donation = await Donation.create(req.body);
+        
+        if (req.user.role !== 'donor') {
+            return res.status(403).json({ message: "Only donors can create donations." });
+        }
+
+    
+        const donation = await Donation.create({
+            ...req.body,
+            donor_id: req.user.id, 
+        });
+
         res.status(201).json(donation);
     } catch (err) {
         console.error("Create donation error:", err);
         res.status(500).json({ message: "Server error" });
     }
 };
+
 
 exports.getDonations = async (req, res) => {
     try {

@@ -3,9 +3,7 @@ const DonationSpending = require("../models/DonationSpending");
 
 exports.getDonationSummary = async (req, res) => {
     try {
-        if (req.user.role !== "orphanage_manager") {
-            return res.status(403).json({ error: "Only orphanage managers can access donation summaries." });
-        }
+        
 
         const totalDonations = await Donation.sum("amount", { where: { status: "completed" } });
 

@@ -6,6 +6,8 @@ const { sendDonationConfirmation } = require("../utils/emailService");
 const Payment = require("../models/payment"); 
 const generateReceipt = require("../utils/generateReceipt");
 const DonationUpdate = require("../models/donationUpdate");
+const VolunteerAssignment = require("../models/VolunteerAssignment");
+const VolunteerRequest = require("../models/VolunteerRequest");
 
 const fakePayment = async (req, res) => {
     return { status: 200, message: "Payment successful", transaction_id: `txn_${Date.now()}` };
@@ -40,17 +42,24 @@ exports.getVolunteerDashboard = async (req, res) => {
     const volunteer_id = req.user.id;
 
     try {
-        const [volunteerRequests] = await db.execute(
-            "SELECT * FROM VolunteerRequests WHERE id IN (SELECT volunteer_request_id FROM VolunteerAssignments WHERE volunteer_id = ?)",
-            [volunteer_id]
-        );
+        const assignments = await VolunteerAssignment.findAll({
+            where: { volunteer_id },
+            include: [
+                {
+                    model: VolunteerRequest,
+                    as: 'volunteer_request'
+                }
+            ]
+        });
+
+        const volunteerRequests = assignments.map(a => a.volunteer_request);
 
         res.json({
             message: "Volunteer Dashboard data retrieved successfully",
             volunteerRequests,
         });
     } catch (error) {
-        console.error(error);
+        console.error("Error fetching volunteer dashboard:", error);
         res.status(500).json({ message: "Error fetching volunteer dashboard" });
     }
 };

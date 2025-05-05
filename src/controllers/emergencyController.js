@@ -49,15 +49,24 @@ exports.donateToEmergency = async (req, res) => {
         const { emergency_id, amount } = req.body;
         const donor_id = req.user.id;
 
+        console.log("📩 Received donation amount:", amount);
+
         const emergency = await Emergency.findByPk(emergency_id);
         if (!emergency) {
             return res.status(404).json({ error: "Emergency case not found." });
         }
 
-        emergency.collected_amount += parseFloat(amount);
+        const parsedAmount = parseFloat(amount);
+        const currentCollected = parseFloat(emergency.collected_amount || 0);
+
+        const updatedAmount = currentCollected + parsedAmount;
+        emergency.collected_amount = updatedAmount;
+
+        console.log(`💰 Current: ${currentCollected} | Add: ${parsedAmount} => New: ${updatedAmount}`);
+
         await emergency.save();
 
-        if (emergency.collected_amount >= emergency.target_amount) {
+        if (updatedAmount >= parseFloat(emergency.target_amount)) {
             emergency.status = "completed";
             await emergency.save();
 

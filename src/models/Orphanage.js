@@ -23,7 +23,14 @@ const Orphanage = sequelize.define("Orphanage", {
             key: 'id'
         },
         onDelete: 'SET NULL'
+    },
+    verified: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     }
+}, {
+    tableName: "Orphanages",
+    timestamps: true
 });
 
 module.exports = Orphanage;

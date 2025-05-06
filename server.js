@@ -48,7 +48,7 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/orphans", orphanRoutes);
 app.use("/api/sponsorship", sponsorshipRoutes);
 app.use("/api/payment", paymentRoutes);
-app.use("/api/orphanages", verifyToken, verifyAdmin, orphanageRoutes);
+app.use("/api/orphanages", orphanageRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/logistics", logisticsRoutes);
 app.use("/api/external", externalApiRoutes);

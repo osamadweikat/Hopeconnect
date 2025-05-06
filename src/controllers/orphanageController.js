@@ -1,19 +1,10 @@
-const db = require("../config/db");
-
-exports.verifyOrphanage = async (req, res) => {
-    try {
-        const orphanageId = req.params.id;
-        await db.execute("UPDATE Orphanages SET verified = 1 WHERE id = ?", [orphanageId]);
-        res.status(200).json({ message: "Orphanage verified successfully" });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Error verifying orphanage" });
-    }
-};
+const Orphanage = require("../models/Orphanage");
 
 exports.getAllOrphanages = async (req, res) => {
     try {
-        const [orphanages] = await db.execute("SELECT * FROM Orphanages WHERE verified = 1");
+        const orphanages = await Orphanage.findAll({
+            where: { verified: true }
+        });
         res.status(200).json({ orphanages });
     } catch (error) {
         console.error(error);
@@ -23,10 +14,9 @@ exports.getAllOrphanages = async (req, res) => {
 
 exports.getOrphanageById = async (req, res) => {
     try {
-        const orphanageId = req.params.id;
-        const [orphanage] = await db.execute("SELECT * FROM Orphanages WHERE id = ?", [orphanageId]);
-        if (!orphanage.length) return res.status(404).json({ message: "Orphanage not found" });
-        res.status(200).json({ orphanage: orphanage[0] });
+        const orphanage = await Orphanage.findByPk(req.params.id);
+        if (!orphanage) return res.status(404).json({ message: "Orphanage not found" });
+        res.status(200).json({ orphanage });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Error fetching orphanage" });
@@ -35,31 +25,46 @@ exports.getOrphanageById = async (req, res) => {
 
 exports.createOrphanage = async (req, res) => {
     try {
-        const { name, location, manager_id } = req.body;
-        if (!name || !location || !manager_id) {
+        const { name, location } = req.body;
+        const manager_id = req.user.id;
+
+        if (!name || !location) {
             return res.status(400).json({ message: "Missing required fields" });
         }
 
-        await db.execute(
-            "INSERT INTO Orphanages (name, location, manager_id, verified) VALUES (?, ?, ?, 0)",
-            [name, location, manager_id]
-        );
-        res.status(201).json({ message: "Orphanage created. Awaiting verification." });
+        await Orphanage.create({ name, location, manager_id, verified: false });
+        res.status(201).json({ message: "Orphanage submitted. Awaiting admin approval." });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Error creating orphanage" });
     }
 };
 
+exports.verifyOrphanage = async (req, res) => {
+    try {
+        const orphanage = await Orphanage.findByPk(req.params.id);
+        if (!orphanage) return res.status(404).json({ message: "Orphanage not found" });
+
+        orphanage.verified = true;
+        await orphanage.save();
+
+        res.status(200).json({ message: "Orphanage verified successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error verifying orphanage" });
+    }
+};
+
 exports.updateOrphanage = async (req, res) => {
     try {
-        const orphanageId = req.params.id;
-        const { name, location } = req.body;
+        const orphanage = await Orphanage.findByPk(req.params.id);
+        if (!orphanage) return res.status(404).json({ message: "Orphanage not found" });
 
-        await db.execute(
-            "UPDATE Orphanages SET name = ?, location = ? WHERE id = ?",
-            [name, location, orphanageId]
-        );
+        const { name, location } = req.body;
+        orphanage.name = name || orphanage.name;
+        orphanage.location = location || orphanage.location;
+
+        await orphanage.save();
         res.status(200).json({ message: "Orphanage updated successfully" });
     } catch (error) {
         console.error(error);
@@ -69,8 +74,10 @@ exports.updateOrphanage = async (req, res) => {
 
 exports.deleteOrphanage = async (req, res) => {
     try {
-        const orphanageId = req.params.id;
-        await db.execute("DELETE FROM Orphanages WHERE id = ?", [orphanageId]);
+        const orphanage = await Orphanage.findByPk(req.params.id);
+        if (!orphanage) return res.status(404).json({ message: "Orphanage not found" });
+
+        await orphanage.destroy();
         res.status(200).json({ message: "Orphanage deleted successfully" });
     } catch (error) {
         console.error(error);

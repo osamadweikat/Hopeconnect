@@ -1,4 +1,4 @@
-const Partnership = require('../models/Partnership');
+const Partnership = require('../models/Organization');
 const {
   sendPartnershipSubmissionConfirmation,
   sendPartnershipStatusUpdate,

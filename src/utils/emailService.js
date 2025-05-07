@@ -135,6 +135,61 @@ const sendSubscriptionPaymentFailure = async (email, planName) => {
     return sendEmail(email, subject, message);
 };
 
+const sendOrganizationReport = async (email, orgName, reportPath, reportTitle) => {
+    const subject = `Your Activity Report - ${reportTitle} - HopeConnect`;
+    const message = `
+        Dear ${orgName},<br><br>
+        Please find attached your detailed activity report titled <strong>${reportTitle}</strong>.<br>
+        We value your continued support and dedication to orphaned children and the community.<br><br>
+        Best regards,<br>
+        HopeConnect Team
+    `;
+    return sendEmail(email, subject, message, reportPath);
+};
+
+const sendWithdrawalNoticeToAdmin = async (adminEmail, orgName, date, reason = '') => {
+    const subject = `Partnership Withdrawal Notice - ${orgName}`;
+    const message = `
+        Admin,<br><br>
+        The organization <strong>${orgName}</strong> has requested to withdraw from the partnership effective <strong>${new Date(date).toDateString()}</strong>.<br>
+        ${reason ? `Reason: <em>${reason}</em><br><br>` : ''}
+        Please follow up accordingly.<br><br>
+        HopeConnect System
+    `;
+    return sendEmail(adminEmail, subject, message);
+};
+
+const sendFeedbackNotification = async (email, targetName, reviewerType, rating) => {
+    if (!email) {
+        console.error("Email is missing in sendFeedbackNotification!");
+        throw new Error("Missing recipient email");
+    }
+
+    const subject = `You received new feedback - HopeConnect`;
+    const message = `
+        Dear ${targetName},<br><br>
+        You have received a new ${reviewerType === "organization" ? "organization" : "orphanage manager"} rating of <strong>${rating}/5</strong>.<br>
+        Thank you for continuing to contribute to a better support system.<br><br>
+        HopeConnect Team
+    `;
+    return sendEmail(email, subject, message);
+};
+
+
+const sendWithdrawalConfirmationToOrg = async (email, orgName, date) => {
+    const subject = "Partnership Withdrawal Request Received - HopeConnect";
+    const message = `
+      Dear ${orgName},<br><br>
+      We have received your request to withdraw from the partnership effective <strong>${new Date(date).toDateString()}</strong>.<br>
+      We appreciate the work we've done together and hope to collaborate again in the future.<br><br>
+      Thank you for your support.<br>
+      HopeConnect Team
+    `;
+    return sendEmail(email, subject, message);
+  };
+  
+
+
 module.exports = {
     sendEmail,
     sendDonationConfirmation,
@@ -144,6 +199,9 @@ module.exports = {
     sendSubscriptionPaymentFailure,
     sendPartnershipStatusUpdate,
     sendPartnershipInfoUpdate,
-    sendPartnershipSubmissionConfirmation 
-  };
-  
+    sendPartnershipSubmissionConfirmation,
+    sendOrganizationReport,
+    sendWithdrawalConfirmationToOrg,
+    sendWithdrawalNoticeToAdmin,
+    sendFeedbackNotification
+};

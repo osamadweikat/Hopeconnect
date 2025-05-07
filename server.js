@@ -35,10 +35,14 @@ const volunteerRoutes = require("./src/routes/volunteerRoutes");
 const emergencyRoutes = require("./src/routes/emergencyRoutes");
 const subscriptionRoutes = require("./src/routes/subscriptionRoutes");
 const donationTrackingRoutes = require("./src/routes/donationTrackingRoutes");
+const organizationAuthRoutes = require("./src/routes/organizationAuthRoutes");
+const organizationRoutes = require("./src/routes/organizationRoutes");
 const donationSummaryRoutes = require("./src/routes/donationSummaryRoutes");
 const partnershipRoutes = require("./src/routes/partnershipRoutes");
 const chatbotRoutes = require("./src/routes/chatbotRoutes");
 const adminDashboardRoutes = require("./src/routes/adminDashboardRoutes");
+require("./src/models/associations");
+
 
 const errorHandler = require("./src/middleware/errorHandler");
 
@@ -58,6 +62,8 @@ app.use("/api/emergency", emergencyRoutes);
 app.use("/api/subscriptions", subscriptionRoutes);
 app.use("/api/donation-tracking", donationTrackingRoutes);
 app.use("/api/donation-summary", donationSummaryRoutes);
+app.use("/api/org-auth", organizationAuthRoutes);
+app.use("/api/organizations", organizationRoutes);
 app.use("/api/partnerships", partnershipRoutes);
 app.use("/api/chatbot", chatbotRoutes);
 app.use("/api/admin/dashboard", adminDashboardRoutes);

@@ -36,6 +36,7 @@ const emergencyRoutes = require("./src/routes/emergencyRoutes");
 const subscriptionRoutes = require("./src/routes/subscriptionRoutes");
 const donationTrackingRoutes = require("./src/routes/donationTrackingRoutes");
 const donationSummaryRoutes = require("./src/routes/donationSummaryRoutes");
+const partnershipRoutes = require("./src/routes/partnershipRoutes");
 const chatbotRoutes = require("./src/routes/chatbotRoutes");
 const adminDashboardRoutes = require("./src/routes/adminDashboardRoutes");
 
@@ -57,6 +58,7 @@ app.use("/api/emergency", emergencyRoutes);
 app.use("/api/subscriptions", subscriptionRoutes);
 app.use("/api/donation-tracking", donationTrackingRoutes);
 app.use("/api/donation-summary", donationSummaryRoutes);
+app.use("/api/partnerships", partnershipRoutes);
 app.use("/api/chatbot", chatbotRoutes);
 app.use("/api/admin/dashboard", adminDashboardRoutes);
 app.use("/api/donation", donationRoutes);

@@ -1,9 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const partnershipController = require('../controllers/partnershipController');
+
+const {
+  addPartnership,
+  getAllPartnerships,
+  getPendingPartnerships,
+  updatePartnershipStatus,
+  updatePartnershipInfo
+} = require('../controllers/partnershipController');
+
 const { verifyToken, verifyAdmin } = require('../middleware/authMiddleware');
 
-router.post('/add', verifyToken, verifyAdmin, partnershipController.addPartnership);
-router.get('/', verifyToken, verifyAdmin, partnershipController.getPartnerships);
+router.post('/add', addPartnership); 
+router.get('/', verifyToken, verifyAdmin, getAllPartnerships);
+router.get('/pending', verifyToken, verifyAdmin, getPendingPartnerships);
+router.put('/:id/status', verifyToken, verifyAdmin, updatePartnershipStatus);
+router.put('/:id', verifyToken, verifyAdmin, updatePartnershipInfo);
 
 module.exports = router;

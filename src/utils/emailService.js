@@ -39,6 +39,71 @@ const sendEmail = async (to, subject, message, attachmentPath = null) => {
     }
 };
 
+const sendPartnershipSubmissionConfirmation = async (email, orgName) => {
+    const subject = "Partnership Request Submitted - HopeConnect";
+    const message = `
+        Dear ${orgName},<br><br>
+        Thank you for submitting your partnership request to <strong>HopeConnect</strong>.<br>
+        Our team will review your application shortly. You will be notified once it's approved or rejected.<br><br>
+        We appreciate your interest in collaborating with us.<br><br>
+        Best regards,<br>
+        HopeConnect Team
+    `;
+    return sendEmail(email, subject, message);
+};
+
+
+const sendPartnershipStatusUpdate = async (email, orgName, status, adminEmail = null) => {
+    let subject, message;
+  
+    if (status === 'approved') {
+      subject = "Your Partnership Request Has Been Approved - HopeConnect";
+      message = `
+        Dear ${orgName},<br><br>
+        We're thrilled to inform you that your partnership request has been <strong>approved</strong>! <br>
+        We deeply appreciate your commitment to supporting orphaned children and vulnerable communities.<br><br>
+        Our team is excited to collaborate with you and create meaningful impact together.<br>
+        Please stay tuned for further coordination.<br><br>
+        Best regards,<br>
+        HopeConnect Team
+      `;
+    } else if (status === 'rejected') {
+      subject = "Your Partnership Request Was Not Approved - HopeConnect";
+      message = `
+        Dear ${orgName},<br><br>
+        Thank you for your interest in partnering with HopeConnect.<br>
+        After reviewing your request, we regret to inform you that it has not been approved at this time.<br><br>
+        We encourage you to contact our administrator at <strong>${adminEmail || 'admin@hopeconnect.org'}</strong> to discuss the reasons for rejection and explore how we can potentially collaborate in the future.<br><br>
+        You're always welcome to reapply after addressing any concerns.<br><br>
+        Wishing you the best in your mission.<br><br>
+        HopeConnect Team
+      `;
+    } else {
+      subject = "Partnership Request Update - HopeConnect";
+      message = `
+        Dear ${orgName},<br><br>
+        Your partnership request status has been updated to <strong>${status}</strong>.<br><br>
+        Best regards,<br>
+        HopeConnect Team
+      `;
+    }
+  
+    return sendEmail(email, subject, message);
+  };
+  
+
+const sendPartnershipInfoUpdate = async (email, orgName) => {
+    const subject = "Partnership Information Updated - HopeConnect";
+    const message = `
+        Dear ${orgName},<br><br>
+        Your partnership information has been updated by HopeConnect's admin.<br>
+        If you have any questions, feel free to reach out.<br><br>
+        Best regards,<br>
+        HopeConnect Team
+    `;
+    return sendEmail(email, subject, message);
+};
+
 const sendDonationConfirmation = async (donation, donorEmail) => {
     const receiptPath = await generateReceipt(donation);
     const subject = "Donation Confirmation - HopeConnect";
@@ -76,5 +141,9 @@ module.exports = {
     sendSubscriptionConfirmation,
     sendSubscriptionCancellation,
     sendSubscriptionRenewalReminder,
-    sendSubscriptionPaymentFailure
-};
+    sendSubscriptionPaymentFailure,
+    sendPartnershipStatusUpdate,
+    sendPartnershipInfoUpdate,
+    sendPartnershipSubmissionConfirmation 
+  };
+  

@@ -1,9 +1,9 @@
-const generateReport = require("../utils/reportGenerator");
+const generateHopeConnectHtmlReport = require("../utils/generateHtmlReport");
 const path = require("path");
 
 exports.downloadAdminReport = async (req, res) => {
     try {
-        const filePath = await generateReport();
+        const filePath = await generateHopeConnectHtmlReport(req.user.id);
         const absolutePath = path.resolve(filePath);
 
         res.download(absolutePath, "HopeConnect_Admin_Report.pdf", (err) => {

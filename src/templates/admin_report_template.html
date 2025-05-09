@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>HopeConnect - Admin Report</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; margin: 40px; font-size: 13px; }
+    .section-title {
+      font-size: 18px;
+      margin-top: 40px;
+      margin-bottom: 10px;
+      color: #1F4E79;
+      border-bottom: 2px solid #1F4E79;
+      padding-bottom: 5px;
+    }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      border-radius: 10px;
+      padding: 14px;
+      color: white;
+      text-align: center;
+      font-size: 13px;
+      min-height: 100px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .table thead { background-color: #1F4E79; color: white; }
+    .table td, .table th { vertical-align: middle; }
+    .bg-users { background-color: #2980b9; }
+    .bg-volunteers { background-color: #f39c12; }
+    .bg-orphanages { background-color: #8e44ad; }
+    .bg-donations { background-color: #27ae60; }
+    .bg-payments { background-color: #3498db; }
+    .bg-admins { background-color: #6c5ce7; }
+    .bg-orgs { background-color: #00b894; }
+    .bg-orphans { background-color: #d63031; }
+    .bg-spending { background-color: #e67e22; }
+    .highlight-box {
+      background: #f9f9f9;
+      padding: 10px 15px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      border-left: 4px solid #1F4E79;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="text-center mb-4">
+    <h2 class="mt-3">FULL ADMIN REPORT</h2>
+    <p>Generated on: {{date}}<br/>Admin: {{admin}}</p>
+  </div>
+
+  <div class="section-title">KEY METRICS</div>
+  <div class="stat-grid">
+    <div class="stat-card bg-users">
+      <strong>{{stats.users}}</strong>
+      <div>Users</div>
+    </div>
+    <div class="stat-card bg-volunteers">
+      <strong>{{stats.volunteers}}</strong>
+      <div>Volunteers</div>
+    </div>
+    <div class="stat-card bg-orphanages">
+      <strong>{{stats.orphanages}}</strong>
+      <div>Orphanages</div>
+    </div>
+    <div class="stat-card bg-admins">
+      <strong>{{stats.totalAdmins}}</strong>
+      <div>Admins</div>
+    </div>
+    <div class="stat-card bg-orgs">
+      <strong>{{stats.totalOrganizations}}</strong>
+      <div>Organizations</div>
+    </div>
+    <div class="stat-card bg-orphans">
+      <strong>{{stats.totalOrphans}}</strong>
+      <div>Orphans</div>
+    </div>
+    <div class="stat-card bg-donations">
+      <strong>${{stats.totalDonations}}</strong>
+      <div>Total Donations</div>
+    </div>
+    <div class="stat-card bg-spending">
+      <strong>${{stats.totalSpending}}</strong>
+      <div>Total Spending</div>
+    </div>
+  </div>
+
+  <div class="section-title">EXECUTIVE SUMMARY</div>
+  <div class="highlight-box">
+    <strong>✔ Sponsorship Coverage:</strong> {{stats.sponsorships}} active sponsorships for {{stats.orphans}} orphans.
+  </div>
+  <div class="highlight-box">
+    <strong>💬 Organization Feedback:</strong> {{stats.feedbackCount}} feedback entries collected.
+  </div>
+  <div class="highlight-box">
+    <strong>🚨 Active Emergencies:</strong> {{stats.emergencyCount}} ongoing emergency reports.
+  </div>
+  <div class="highlight-box">
+    <strong>📢 Notification Read Rate:</strong> {{stats.readNotifications}} / {{stats.totalNotifications}} read.
+  </div>
+
+  {{#each allModels}}
+    <div class="section-title">{{@key}}</div>
+    <table class="table table-bordered table-sm">
+      <thead>
+        <tr>
+          {{#if this.[0]}}
+            {{#each (getKeys this.[0])}}
+              <th>{{this}}</th>
+            {{/each}}
+          {{else}}
+            <th>No Data</th>
+          {{/if}}
+        </tr>
+      </thead>
+      <tbody>
+        {{#each this}}
+          <tr>
+            {{#each (getKeys this)}}
+              <td>{{lookup ../this this}}</td>
+            {{/each}}
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  {{/each}}
+
+  <p class="text-center mt-5">HopeConnect Admin Report – {{year}}<br/>© {{year}} HopeConnect. All rights reserved.</p>
+</body>
+</html>

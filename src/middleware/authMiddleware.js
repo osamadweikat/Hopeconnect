@@ -29,3 +29,11 @@ exports.verifyAdmin = (req, res, next) => {
     }
     next();
 };
+
+exports.verifyManager = (req, res, next) => {
+    if (!req.user || req.user.role !== 'orphanage_manager') {
+        return res.status(403).json({ message: 'Access denied. Only orphanage managers can perform this action.' });
+    }
+    next();
+};
+

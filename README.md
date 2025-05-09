@@ -1,104 +1,49 @@
 🌍 HopeConnect – Supporting Orphaned Children in Gaza After War
 
-HopeConnect is a backend API platform designed to facilitate donations, sponsorships, and humanitarian services for orphaned children in Gaza. In the aftermath of conflict, this platform ensures transparency, trust, and efficiency in connecting donors, volunteers, and organizations with orphanages and children in need.
+HopeConnect is a backend API platform designed to streamline donations, sponsorships, emergency relief, and volunteer support for orphaned children in Gaza. It ensures transparency, traceability, and collaboration between donors, organizations, volunteers, and orphanages.
 
 🎯 Motivation & Goal
 
-The project was created in response to the urgent need for secure and traceable support channels to aid war-affected children in Gaza. The primary aim is to:
+Provide secure, trackable donation and sponsorship channels
 
-Offer direct sponsorship and donation opportunities.
+Empower volunteers to support through education, health, and mentorship
 
-Enable volunteers to assist through educational, medical, and mentoring services.
+Build trust and transparency through real-time reports
 
-Promote transparency through real-time tracking and reporting.
+⚙️ Technical Stack
 
-Build trust between donors and orphanages.
-
-⚙️ Technical Overview
-
-Framework Used: Node.js with Express.js
-
-✅ Chosen for its development speed, ecosystem richness, and async-friendly nature.
-
-✅ Easier integration with modern frontend & mobile apps.
+Framework: Node.js with Express.js ✅
 
 Database: MySQL (mandatory)
 
 ORM: Sequelize
 
-API Format: RESTful API
+API: RESTful API
 
-Reporting: Dynamic PDF generation using Handlebars + Puppeteer
+Reports: Handlebars.js + Puppeteer (admin PDF reports)
 
-External APIs: Integration-ready with third-party verification, location services, or emergency feeds
+🔐 Core Modules
 
-🔐 Core Modules & Features
+👶 Orphan Profiles & Sponsorships
 
-1. 👶 Orphan Profiles & Sponsorships
+💸 Donation System with multiple categories
 
-Each orphan has a detailed profile (age, health, education).
+🤝 Volunteer Matching
 
-Sponsors can select orphans to support.
+📊 Donor Dashboard & Reviews
 
-Updates include progress reports, photos, and health data.
+🚨 Emergency Campaigns + Email Alerts
 
-2. 💸 Donation Management System
+🚚 Logistics Tracking
 
-Donations categorized into:
+🧾 PDF Reporting for Admins
 
-General Fund
+🧠 Highlights
 
-Education Support
+✅ Role-based security and validation
 
-Medical Aid
+✅ Real-time donation tracking
 
-Supports monetary + item-based donations.
+✅ Logistic coordination & impact reports
 
-Integrated donation tracking for full transparency.
-
-3. 🤝 Volunteer & Service Matching
-
-Volunteers register with skills and availability.
-
-Orphanages post help requests.
-
-The system matches offers with requests.
-
-4. 📊 Donor Dashboard & Transparency
-
-Donors access real-time usage data of their donations.
-
-Review system allows donors to rate orphanages.
-
-Verified entities prevent fraudulent use.
-
-5. 🚨 Emergency Support System
-
-Highlighted urgent campaigns (e.g. food, medicine).
-
-Donors notified instantly via email.
-
-6. 🚚 Logistics & Resource Distribution
-
-Tracks donation delivery via statuses (pending → delivered).
-
-Maps can be integrated for location-specific updates.
-
-7. 🧾 Reporting System (Admin)
-
-Admin can generate PDF reports covering all platform data.
-
-
-🧠 Additional Design Considerations
-
-User Roles: admin, donor, volunteer, orphanage manager, organization
-
-Security: Role-based access, input validation, safe password hashing
-
-Error Handling: Centralized middleware & logger
-
-Version Control: Git-based branching with pull requests and commit history
-
-Testing: Covered manually and with Postman/Swagger collections
-
-Documentation: Internal and external API docs available for each route
+✅ Postman-ready API
